@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>水準器</title>
+<style>
+  body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  #level {
+    margin-top: 50px;
+  }
+  #permissionButton {
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+<h1>デジタル水準器</h1>
+<button id="permissionButton">動きの検出を許可する</button>
+<div id="level">
+  <p>X軸の角度: <span id="xAngle">0</span>°</p>
+  <p>Y軸の角度: <span id="yAngle">0</span>°</p>
+</div>
+
+<script>
+// 動きの検出許可をリクエストする関数
+function requestPermission() {
+  if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    DeviceMotionEvent.requestPermission()
+      .then(permissionState => {
+        if (permissionState === 'granted') {
+          window.addEventListener('deviceorientation', updateLevel);
+          document.getElementById('permissionButton').style.display = 'none';
+        } else {
+          alert('動きの検出の許可が必要です。');
+        }
+      })
+      .catch(console.error);
+  } else {
+    // ハンドラはモバイルSafari以外では自動的に実行されます
+    window.addEventListener('deviceorientation', updateLevel);
+    document.getElementById('permissionButton').style.display = 'none';
+  }
+}
+
+// 傾きを検出して表示を更新する関数
+function updateLevel(event) {
+  const xAngle = Math.round(event.beta);  // X軸（前後の傾き）
+  const yAngle = Math.round(event.gamma); // Y軸（左右の傾き）
+
+  document.getElementById('xAngle').textContent = xAngle;
+  document.getElementById('yAngle').textContent = yAngle;
+}
+
+// 許可リクエストボタンのイベントリスナー
+document.getElementById('permissionButton').addEventListener('click', requestPermission);
+</script>
+</body>
+</html>
