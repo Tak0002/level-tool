@@ -23,6 +23,8 @@
 <div id="level">
   <p>X軸の角度: <span id="xAngle">0</span>°</p>
   <p>Y軸の角度: <span id="yAngle">0</span>°</p>
+  <p>合成傾斜角度: <span id="compositeAngle">0</span>°</p>
+  <p>傾斜判定: <span id="tiltStatus">平面</span></p>
 </div>
 
 <script>
@@ -50,9 +52,24 @@ function requestPermission() {
 function updateLevel(event) {
   const xAngle = Math.round(event.beta);  // X軸（前後の傾き）
   const yAngle = Math.round(event.gamma); // Y軸（左右の傾き）
+  const compositeAngle = Math.round(Math.sqrt(xAngle * xAngle + yAngle * yAngle)); // 合成傾斜角度を計算
 
   document.getElementById('xAngle').textContent = xAngle;
   document.getElementById('yAngle').textContent = yAngle;
+  document.getElementById('compositeAngle').textContent = compositeAngle;
+
+  let tiltStatus = '平面';
+  if (xAngle > 10) {
+    tiltStatus = '前方傾斜';
+  } else if (xAngle < -10) {
+    tiltStatus = '後方傾斜';
+  } else if (yAngle > 10) {
+    tiltStatus = '右傾斜';
+  } else if (yAngle < -10) {
+    tiltStatus = '左傾斜';
+  }
+
+  document.getElementById('tiltStatus').textContent = tiltStatus;
 }
 
 // 許可リクエストボタンのイベントリスナー
